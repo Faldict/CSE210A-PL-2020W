@@ -11,13 +11,15 @@ import Text.Parsec.Error (ParseError)
 data Expr = Nv Int
           | Add Expr Expr
           | Mul Expr Expr
-     --   | Sub Expr Expr
+          | Exp Int Int
+          | Sub Expr Expr
     deriving Show
 
 eval :: Expr -> Int
 eval ex = case ex of
     Add a b -> eval a + eval b
     Mul a b -> eval a * eval b
+    Sub a b -> eval a - eval b
     Nv x -> x 
 
 whitespace :: Parser ()
@@ -39,10 +41,7 @@ mulParser = chainl1 numberParser op
 addParser :: Parser Expr
 addParser = chainl1 mulParser op
     where op = Add <$ lexeme (char '+')
-
--- subParser :: Parser Expr
--- subParser = chainl1 mulParser op 
---     where op = Sub <$ lexeme (char '-')
+               <|> Sub <$ lexeme (char '-') 
 
 run :: String -> Either ParseError Int
 run s = 
