@@ -3,4 +3,4 @@ arith : arith.hs
 
 .PHONY : clean
 clean :
-		-rm arith $(objects)
+		-rm -f arith *.hi *.o
