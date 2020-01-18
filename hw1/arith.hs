@@ -39,14 +39,14 @@ mulParser :: Parser Expr
 mulParser = chainl1 numberParser op
     where op = Mul <$ lexeme (char '*')
 
-addParser :: Parser Expr
-addParser = chainl1 mulParser op
+arithParser :: Parser Expr
+arithParser = chainl1 mulParser op
     where op = Add <$ lexeme (char '+')
                <|> Sub <$ lexeme (char '-') 
 
 run :: String -> Either ParseError Int
 run s = 
-    case parse addParser "<stdin>" s of
+    case parse arithParser "<stdin>" s of
         Left err -> Left err
         Right e -> Right (eval e)
 

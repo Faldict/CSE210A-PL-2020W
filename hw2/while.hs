@@ -84,8 +84,8 @@ term = m_parens exprparser
               ; return $ Nv $ read (s ++ cs)
               }
 
-mainparser :: Parser Expr
-mainparser = m_whiteSpace >> stmtparser <* eof
+whileparser :: Parser Expr
+whileparser = m_whiteSpace >> stmtparser <* eof
     where
       stmtparser :: Parser Expr
       stmtparser = fmap Seq (m_semiSep1 stmt1)
@@ -114,7 +114,7 @@ mainparser = m_whiteSpace >> stmtparser <* eof
 main :: IO ()
 main = do
     a <- getLine
-    case parse mainparser "" a of
+    case parse whileparser "" a of
              { Left err -> print err
              ; Right ans -> print ans
              }
