@@ -1,5 +1,5 @@
-while : while.hs
-	-ghc while.hs
+while : 
+	ghc while.hs
 
 .PHONY : clean
 clean :

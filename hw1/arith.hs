@@ -1,6 +1,6 @@
 -- parser
 import Data.Char
-import Data.Either (fromRight)
+-- import Data.Either (fromRight)
 import Control.Monad
 import Control.Applicative ((<|>))
 import Text.Parsec (parse, many, many1, oneOf, string, char, digit, chainl1)
@@ -53,4 +53,4 @@ run s =
 main :: IO ()
 main = do
     a <- getLine
-    print $ fromRight 0 (run a)
+    either print print (run a)
