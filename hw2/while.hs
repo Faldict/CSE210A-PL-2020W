@@ -2,7 +2,7 @@
 -- Program: while.hs
 -- Author: Faldict
 
--- On this homework, I worked 8 hours independently.
+-- On this homework, I worked 10 hours independently.
 -- ----------------------
 
 import Data.Map
@@ -84,7 +84,7 @@ def = emptyDef{ commentStart = "{-"
               , commentEnd = "-}"
               , identStart = letter
               , identLetter = alphaNum
-              , opStart = oneOf "=:+*<>¬∧"
+              , opStart = oneOf "-=:+*<>¬∧∨"
               , opLetter = oneOf "=:<>+-*¬∧∨"
               , reservedOpNames = ["-", "∨", "∧", "=", ":=", "+", "*", "<", "<=", ">", ">=", "¬"]
               , reservedNames = ["true", "false", "skip",
@@ -103,8 +103,8 @@ TokenParser{ parens = m_parens
 exprparser :: Parser Expr
 exprparser = buildExpressionParser table term <?> "expression"
 
-table = [ [ Prefix (m_reservedOp "¬" >> return (Not))]
-        , [ Prefix (m_reservedOp "-" >> return (Neg))]
+table = [ [ Prefix (m_reservedOp "¬" >> return (Not))
+          , Prefix (m_reservedOp "-" >> return (Neg))]
         , [ binaryL "*" (Mul) ]
         , [ binaryL "+" (Add)
           , binaryL "-" (Sub)]
@@ -130,6 +130,16 @@ term = m_parens exprparser
               ; spaces
               ; return $ Nv $ read cs
               }
+       <?> "term"
+
+whitespace' :: Parser ()
+whitespace' = void $ many $ oneOf " \n\t"
+
+lexeme' :: Parser a -> Parser a 
+lexeme' p = p <* whitespace'
+
+symbol' :: String -> Parser String
+symbol' s = lexeme' $ string s
 
 whileparser :: Parser Expr
 whileparser = m_whiteSpace >> stmtparser <* eof
@@ -138,7 +148,7 @@ whileparser = m_whiteSpace >> stmtparser <* eof
       stmtparser = fmap Seq (m_semiSep1 stmt1)
       stmt1 = (m_reserved "skip" >> return Skip)
               <|> do { v <- m_identifier
-                     ; m_reservedOp ":="
+                     ; symbol' ":="
                      ; e <- exprparser
                      ; return (Assign v e)
                      }
@@ -158,20 +168,9 @@ whileparser = m_whiteSpace >> stmtparser <* eof
                      }
               <|> exprparser
 
-getLines :: IO [String]
-getLines = do
-  x <- getLine
-  if x == ""
-    then return []
-    else do
-      xs <- getLines
-      return (x:xs)
-
 main :: IO ()
 main = do
-    -- codes <- getLines
-    -- let code = foldl1 (\a b -> a ++ b) codes in
-        code <- getLine
+        code <- getContents
         case parse whileparser "" code of
              { Left err -> print err
              ; Right expr -> putStrLn $ showStore $ eval Map.empty expr
