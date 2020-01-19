@@ -1,3 +1,10 @@
+-- ---------------------
+-- Program: while.hs
+-- Author: Faldict
+
+-- On this homework, I worked 8 hours independently.
+-- ----------------------
+
 import Data.Map
 import qualified Data.Map as Map
 import Control.Applicative((<*))
